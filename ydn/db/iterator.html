@@ -270,19 +270,7 @@ namespace: "ydn.db"
   </dl>
 </details>
 <div class="sectionTitle">Methods </div>
-<details class="dev-only"> <summary> <a name="count"></a>
-  <div class="fixedFont"> <b>count</b>() </div>
-  <div class="description"> Get <em>count</em> cursor <em>state
-    property</em>.</div>
-</summary><em>count</em> value is initially <code> 0</code> and reset
-  to <code>0</code> for a new none-resume cursor iteration. Each cursor
-  with value iteration increase by one.
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{number}</span> <em>count</em>
-      value.</dd>
-  </dl>
-</details>
+
 <hr class="dev-only"> <details class="dev-only"> <summary> <a name="done"></a>
   <div class="fixedFont"> <b>getState</b>() </div>
   <div class="description"> Get <em></em>cursor <em>state property</em>.</div>
@@ -344,40 +332,7 @@ namespace: "ydn.db"
       or <code>PREV_UNIQUE</code>.</dd>
   </dl>
 </details>
-<hr class="dev-only"> <details> <summary> <a name="join"></a>
-  <div class="fixedFont"> <b>join</b>(store name, field_name,
-    cursor_range) </div>
-  <div class="description"> Join in cursor iteration.</div>
-</summary>
-  <p>Join create a <span style="font-style: italic;">multi-cursor range
-            iterator</span> by optionally restricting a cursor range. The store
-    on the iterator is called <span style="font-style: italic;">base
-            store</span>. The store joins to the iterator is called <span style="font-style: italic;">peer
-            store</span>. If peer store name is same as base store, the join is
-    self-join.<br>
-  </p>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
-    <dd>The peer store name.<br>
-    </dd>
-    <dt><span class="light fixedFont">{string=}</span> <b>field_name</b></dt>
-    <dd><span class="light fixedFont optional">Optional.</span> Field name
-      to apply key range restriction on peer store.</dd>
-    <dt><span class="light fixedFont optional">{(ydn.db.KeyRange|IDBKey)=}</span>
-      <b>key_range</b></dt>
-    <dd><span class="light fixedFont optional">Optional.</span>
-      Restriction key range or key. If key is supplied, it will change to
-      key range by&nbsp; <code>ydn.db.Key</code><code>Range.only</code>.
-      <br>
-    </dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Iterator}</span> Newly
-      created multi-cursor range iterator with join restriction applied.</dd>
-  </dl>
-</details>
+
 <hr> <details> <summary> <a name="getKey"></a>
   <div class="fixedFont"> <b>getKey</b>() </div>
   <div class="description"> Get state property <em>current effective
@@ -411,38 +366,7 @@ namespace: "ydn.db"
       created iterator with initial state.</dd>
   </dl>
 </details>
-<hr> <details> <summary> <a name="restrict"></a>
-  <div class="fixedFont"> <b>restrict</b>(field_name, value) </div>
-  <div class="description"> Restrict cursor range by a postfix composite
-    key.</div>
-</summary>
-  <p>Restrict a new composite cursor range iterator by postfixing starts
-    with key value. </p>
-  <p>The following example restrict cursor range to 2 on indexed field
-    name 'age' and 'dog' to indexed field name 'pet' to the store 'st'.</p>
-        <pre class="prettyprint language-js" contenteditable="true"><span class="kwd">var</span><span class="pln"> iter </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> ydn</span><span class="pun">.</span><span class="pln">db</span><span class="pun">.</span><span class="typ">ValueIterator</span><span class="pun">(</span><span class="str">'st'</span><span class="pun">);</span><span class="pln">
-iter </span><span class="pun">=</span><span class="pln"> iter</span><span class="pun">.</span><span class="pln">restrict</span><span class="pun">(</span><span class="str">'age'</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2</span><span class="pun">).</span><span class="pln">restrict</span><span class="pun">(</span><span class="str">'pet'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'dog'</span><span class="pun">);</span><span class="pln">
-db</span><span class="pun">.</span><span class="pln">values</span><span class="pun">(</span><span class="pln">iter</span><span class="pun">).</span><span class="pln">done</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">x</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-  console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="pln">x</span><span class="pun">);</span><span class="pln"> </span><span class="com">// records of having age = 2 and pet = 'dog'</span><span class="pln">
-</span><span class="pun">});</span></pre>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{string}</span> <b>field_name</b></dt>
-    <dd><span class="light fixedFont optional">Optional.</span> Field name
-      to apply key range restriction on peer store.</dd>
-    <dt><span class="light fixedFont optional">{!IDBKey}</span> <b>value</b></dt>
-    <dd><span class="light fixedFont optional">Optional.</span>
-      Restriction key range or key. If key is supplied, it will change to
-      key range by&nbsp; <code>ydn.db.Key</code><code>Range.only</code>.
-      <br>
-    </dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Iterator}</span> Newly
-      created composite cursor range iterator with restriction applied.</dd>
-  </dl>
-</details>
+
 <hr> <details> <summary> <a name="resume"></a>
   <div class="fixedFont"> <b>resume</b>(key, index_key) </div>
   <div class="description"> Set state property to resume the iterator.</div>
