@@ -1,0 +1,106 @@
+---
+layout: ydn-api
+description: "Interface for Entity service provider"
+title: "Interface for Entity service provider"
+article:
+  written_on: 2014-04-01
+  updated_on: 2014-04-28
+  order: 3
+collection: "ydn.db"
+namespace: "ydn.db"
+---
+
+  <h2 class="classTitle">Interface ydn.db.sync.IService</h2>
+  <p> Backend service will implement this service provider for Entity data source.
+    <span class="version">entity</span></p>
+
+  <br>
+  <div class="sectionTitle"> Methods </div>
+  <details> <summary> <a name="get"></a>
+    <div class="fixedFont"> <b>get</b> (callback, name, id, token) <br>
+    </div>
+    <div class="description"> Get resource.</div>
+  </summary><p>Get resource from server using given name to build resource URI and return
+    resource object. If object with validator token already exists in the database and the token
+    will be provided. HTTP requester should use the token as in 'If-Match' or 'If-Modified-Since' header. Server should return 304 if not modified.</p>
+    <p>Returning status code 200 or 201 will update the resource. If navigator is not online, callback should invoke with 503 status.</p>
+    <dl class="detailList">
+      <dt class="heading">Parameters:</dt>
+      <dt><span class="light fixedFont">function(number, Object, *)</span> <b>callback</b></dt>
+      <dd>callback invokes with HTTP status code.</dd>
+      <dt><span class="light fixedFont">string</span> <b>name</b></dt>
+      <dd>entity name</dd>
+      <dt><span class="light fixedFont">IDBKey</span> <b>id</b></dt>
+      <dd>entity id</dd>
+      <dt><span class="light fixedFont">*</span> <b>token</b></dt>
+      <dd>validator token</dd>
+    </dl>
+  </details>
+  <hr> <details> <summary> <a name="add"></a>
+  <div class="fixedFont"> <b>add</b>(callback, name, obj)<br></div>
+  <div class="description"> Add resource to backend service.</div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">function(number, Object, IDBKey, *)</span> <b>callback</b></dt>
+    <dd>callback invokes with HTTP status code, resource body, resource key and validation token after persisting to
+      * backend service. Use <code>null</code> for token if not available.</dd>
+    <dt><span class="light fixedFont">string</span> <b>name</b></dt>
+    <dd>entity name</dd>
+    <dt><span class="light fixedFont">Object</span> <b>obj</b></dt>
+    <dd>resource to persist.</dd>
+  </dl>
+</details>
+<hr> <details> <summary> <a name="put"></a>
+  <div class="fixedFont"> <b>put</b>(callback, name, obj, id, token)<br></div>
+  <div class="description"> Update resource to backend service.</div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">function(number, Object, IDBKey, *)</span> <b>callback</b></dt>
+    <dd>callback invokes with HTTP status code, resource body, resource key and validation token after persisting to
+      backend service. Use <code>null</code> for token if not available.</dd>
+    <dt><span class="light fixedFont">string</span> <b>name</b></dt>
+    <dd>entity name</dd>
+    <dt><span class="light fixedFont">Object</span> <b>obj</b></dt>
+    <dd>resource to persist.</dd>
+    <dt><span class="light fixedFont">IDBKey</span> <b>id</b></dt>
+    <dd>entity id</dd>
+    <dt><span class="light fixedFont">*</span> <b>token</b></dt>
+    <dd>validator token</dd>
+  </dl>
+</details>
+<hr> <details> <summary> <a name="remove"></a>
+  <div class="fixedFont"> <b>remove</b>(callback, name, id, token)<br></div>
+  <div class="description"> Remove resource to backend service.</div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">function(number)</span> <b>callback</b></dt>
+    <dd>callback invokes with HTTP status code after removing to
+      backend service. </dd>
+    <dt><span class="light fixedFont">string</span> <b>name</b></dt>
+    <dd>entity name</dd>
+    <dt><span class="light fixedFont">IDBKey</span> <b>id</b></dt>
+    <dd>entity id</dd>
+    <dt><span class="light fixedFont">*</span> <b>token</b></dt>
+    <dd>validator token</dd>
+  </dl>
+</details>
+<hr> <details> <summary> <a name="list"></a>
+  <div class="fixedFont"> <b>list</b>(callback, name, token)<br></div>
+  <div class="description"> List resource collection to be update into the database.</div>
+</summary>This method is used only when entity is synchronized by queue method.
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">function(number, !Array.&lt;Object&gt;, !Array.&lt;IDBKey&gt;, !Array&lt;*&gt;, *)</span> <b>callback</b></dt>
+    <dd>return list of entities with its keys and validation tokens. The last is next paging token. If paging token is is not <code>null</code>, list method will be invoked again with given paging token.</dd>
+    <dt><span class="light fixedFont">string</span> <b>name</b></dt>
+    <dd>entity name</dd>
+    <dt><span class="light fixedFont">*</span> <b>token</b></dt>
+    <dd>token paging token. If paging token is not provided, paging token should be
+      read from the database.</dd>
+  </dl>
+</details>
+
+<br /><div class="g-comments"></div>
