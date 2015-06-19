@@ -85,6 +85,109 @@ namespace: "ydn.db"
     </dl>
   </div>
 </details>
+<hr><details> <summary> <a name="encryption"></a>
+  <div class="fixedFont"> <b>EncryptionOption</b> </div>
+  <div class="description"> Define encryption options in JSON. </div>
+</summary>
+
+<pre>var options = {
+    Encryption: {
+      unsafeParse: false,
+      method: 'acs-cbc',
+      encryptKey: false,
+      secrets: [{
+        name: 'aaaa',
+        key: 'aYHF6vfuGHpfWS*eRLrPQxZjSó~É5c6HjCscqDqRtZasp¡JWSMGaW'
+      }]
+    }
+ };
+</pre>
+  <div class="details">
+    <dl class="detailList">
+      <dt class="heading">Fields:</dt>
+      <dt><span class="light fixedFont optional">{number=}</span> <b>expiration</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. expiration time in ms. </dd>
+
+      <dt><span class="light fixedFont optional">{boolean=}</span>
+        <b>encryptKey</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. Encrypt record key. By default only record value is encrypted.</dd>
+      <dt><span class="light fixedFont optional">{string=}</span> <b>method</b></dt>
+      <dd> Encryption key and name. </dd>
+      <dt><span class="light fixedFont optional">{Array&lt;Object&gt;}</span> <b>secrets</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. Cipher algorithms, either 'aes-cbc' or 'rc4', representing Advanced Encryption Standard with Cipher Block Chaining Mod or Rivest Cipher 4 respectively. Default to 'aes-cbc'.</dd>
+    </dl>
+  </div>
+</details>
+
+<hr><details> <summary> <a name="index"></a>
+  <div class="fixedFont"> <b>ydn.db.schema.Index</b> </div>
+  <div class="description"> Define index schema in JSON. </div>
+</summary>
+  <div class="details">
+          <pre>var user_store = {
+  keyPath: 'email'
+  type: 'TEXT'
+  indexes: [{
+    name: 'last, first',
+    keyPath: ['last', 'first'],
+  }, {
+    keyPath: 'hobby'
+    multiEntry: true
+    type: 'TEXT'
+  }, {
+    name: 'name', // index for case in-sensitive sorting
+    generator: function(obj) {
+      var name = obj.first + ' ' + obj.last;
+      return name.toLowerCase();
+    }
+  }]
+};
+
+// example user record
+var user = {
+  first: 'Aa',
+  last: 'Ba
+  email: 'ab@example.com',
+  hobby: ['camping', 'guitar'],
+  age: 24
+}
+</pre>
+    <dl class="detailList">
+      <dt class="heading">Fields:</dt>
+      <dt><span class="light fixedFont optional">{string=}</span> <b>name</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. Index
+        name.</dd>
+      <dt><span class="light fixedFont optional">{function(!Object)=}</span>
+        <b>generator</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. Index
+        key generator. Generator function will be invoked when a record
+        value is about to <code>add</code> or <code>put</code> to the
+        object store. Returning a valid <code>IDBKey</code> or <code>undefined</code>
+        will set to the index key of the record value while ignoring other
+        return type.</dd>
+      <dt><span class="light fixedFont optional">{string}</span> <b>keyPath</b></dt>
+      <dd>Key path defined field path to extract key from the record
+        object. Use array to define compound index. User doted notation to
+        define nested path. Use dotted notation to reference nested
+        attributes. Use array to represent composite index. </dd>
+      <dt><span class="light fixedFont optional">{(!Array.&lt;string&gt;|string)=}</span>
+        <b>type</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. Data
+        type of the key. If provided, WebSQL uses for optimization.
+        Possible value are <code>BLOB</code>, <code>DATE</code>, <code>INTEGER</code>,
+        <code>NUMERIC</code> and <code>TEXT</code>. If <code>autoIncrement</code>
+        is true and data type is defined, data type must be <code>INTEGER</code>.
+      </dd>
+      <dt><span class="light fixedFont optional">{boolean=}</span> <b>unique</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>.
+        Constrain unique index key value. <code>ConstrainError</code>
+        will issue if duplicate index key is stored.</dd>
+      <dt><span class="light fixedFont optional">{boolean=}</span> <b>multiEntry</b></dt>
+      <dd><span class="light fixedFont optional">Optional</span>. For
+        array index key, individual elements are indexed.</dd>
+    </dl>
+  </div>
+</details>
 <hr> <details> <summary>
   <div class="fixedFont"> <b>ydn.db.schema.Store</b> </div>
   <div class="description"> Define store schema in JSON. </div>
@@ -155,77 +258,8 @@ var player_1 = {
     </dl>
   </div>
 </details>
-<hr><details> <summary> <a name="index"></a>
-  <div class="fixedFont"> <b>ydn.db.schema.Index</b> </div>
-  <div class="description"> Define index schema in JSON. </div>
-</summary>
-  <div class="details">
-          <pre>var user_store = {
-  keyPath: 'email'
-  type: 'TEXT'
-  indexes: [{
-    name: 'last, first',
-    keyPath: ['last', 'first'],
-  }, {
-    keyPath: 'hobby'
-    multiEntry: true
-    type: 'TEXT'
-  }, {
-    name: 'name', // index for case in-sensitive sorting
-    generator: function(obj) {
-      var name = obj.first + ' ' + obj.last;
-      return name.toLowerCase();
-    }
-  }]
-};
 
-// example user record
-var user = {
-  first: 'Aa',
-  last: 'Ba
-  email: 'ab@example.com',
-  hobby: ['camping', 'guitar'],
-  age: 24
-}
-</pre>
-    <dl class="detailList">
-      <dt class="heading">Fields:</dt>
-      <dt><span class="light fixedFont optional">{string=}</span> <b>name</b></dt>
-      <dd><span class="light fixedFont optional">Optional</span>. Index
-        name.</dd>
-      <dt><span class="light fixedFont optional">{function(!Object)=}</span>
-        <b>generator</b></dt>
-      <dd><span class="light fixedFont optional">Optional</span>. Index
-        key generator. Generator function will be invoked when a record
-        value is about to <code>add</code> or <code>put</code> to the
-        object store. Returning a valid <code>IDBKey</code> or <code>undefined</code>
-        will set to the index key of the record value while ignoring other
-        return type.</dd>
-      <dt><span class="light fixedFont optional">{string}</span> <b>keyPath</b></dt>
-      <dd>Key path defined field path to extract key from the record
-        object. Use array to define compound index. User doted notation to
-        define nested path. Use dotted notation to reference nested
-        attributes. Use array to represent composite index. </dd>
-      <dt><span class="light fixedFont optional">{(!Array.&lt;string&gt;|string)=}</span>
-        <b>type</b></dt>
-      <dd><span class="light fixedFont optional">Optional</span>. Data
-        type of the key. If provided, WebSQL uses for optimization.
-        Possible value are <code>BLOB</code>, <code>DATE</code>, <code>INTEGER</code>,
-        <code>NUMERIC</code> and <code>TEXT</code>. If <code>autoIncrement</code>
-        is true and data type is defined, data type must be <code>INTEGER</code>.
-      </dd>
-      <dt><span class="light fixedFont optional">{boolean=}</span> <b>unique</b></dt>
-      <dd><span class="light fixedFont optional">Optional</span>.
-        Constrain unique index key value. <code>ConstrainError</code>
-        will issue if duplicate index key is stored.</dd>
-      <dt><span class="light fixedFont optional">{boolean=}</span> <b>multiEntry</b></dt>
-      <dd><span class="light fixedFont optional">Optional</span>. For
-        array index key, individual elements are indexed.</dd>
-    </dl>
-  </div>
-</details>
-<hr>
-<details><summary> <a name="sync"></a>
+<hr><details><summary> <a name="sync"></a>
   <div class="fixedFont"> <b>ydn.db.schema.Sync</b> </div>
   <div class="description"> Define synchronization options. </div>
 </summary>
