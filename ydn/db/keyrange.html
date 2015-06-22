@@ -44,21 +44,21 @@ namespace: "ydn.db"
     <td><code>ydn.db.KeyRange.lowerBound(<strong>y</strong>, true)</code></td>
   </tr>
   <tr>
-    <td>All keys ? <strong>x</strong> &amp;&amp; ? <strong>y</strong></td>
+    <td>All keys &ge; <strong>x</strong> &le; <strong>y</strong></td>
     <td><code>ydn.db.KeyRange.bound(<strong>x</strong>, <strong>y</strong>)</code></td>
   </tr>
   <tr>
-    <td>All keys &gt; <strong>x</strong> &amp;&amp;&lt; <strong>y</strong></td>
+    <td>All keys &gt; <strong>x</strong> &lt; <strong>y</strong></td>
     <td><code>ydn.db.KeyRange.bound(<strong>x</strong>, <strong>y</strong>,
       true, true)</code></td>
   </tr>
   <tr>
-    <td>All keys &gt; <strong>x</strong> &amp;&amp; ? <strong>y</strong></td>
+    <td>All keys &gt; <strong>x</strong> &ge; <strong>y</strong></td>
     <td><code>ydn.db.KeyRange.bound(<strong>x</strong>, <strong>y</strong>,
       true, false)</code></td>
   </tr>
   <tr>
-    <td>All keys ? <strong>x</strong> &amp;&amp;&lt; <strong>y</strong></td>
+    <td>All keys &le; <strong>x</strong> &lt; <strong>y</strong></td>
     <td><code>ydn.db.KeyRange.bound(<strong>x</strong>, <strong>y</strong>,
       false, true)</code></td>
   </tr>
