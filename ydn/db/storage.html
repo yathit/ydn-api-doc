@@ -84,7 +84,7 @@ stores: [{
         <dd><span class="light fixedFont optional">Optional</span>. Set <code>true</code> to auto schema mode.</dd>
         <dt><span class="light fixedFont">{number=}</span> <b>connectionTimeout</b></dt>
         <dd><span class="light fixedFont optional">Optional</span>. Database connection timeout interval in milli-second. Default to 60 seconds or 2 seconds in dev. </dd>
-        <dt><span class="light fixedFont optional">{Object=}</span> <b>Encryption</b><span class="version">crypt</span></dt>
+        <dt><span class="light fixedFont optional">{Object=}</span> <a href="/api/ydn/crypto/Cipher.html"><b>EncryptionOption</b></a> <span class="version">crypt</span></dt>
         <dd><span class="light fixedFont optional">Optional</span>. Encryption options having
           <span class="light fixedFont optional">{number=} </span><code>expiration</code>,
           data expiration interval in milli seconds, <span class="light fixedFont optional">{Array} </span>
@@ -315,6 +315,7 @@ req.fail(function(keys_or_errors) {
   <div class="description"> Create a new thread with given transaction
     thread policy using existing connection. </div>
 </summary>
+  <p>Generally it is a good practice for each components of the app use their own branch, rather then using storage instance direction. Use parallel transaction policy for performance and serial transaction policy when request needed to be executed in order.</p>
   <dl class="detailList">
     <dt class="heading">Parameters:</dt>
     <dt><span class="light fixedFont">{string}</span> <b>tx_policy</b></dt>
