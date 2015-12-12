@@ -206,8 +206,9 @@ stores: [{
     <dt class="heading">Throws: <b>DataError</b>, <b>DataCloneError</b>,
       <b>ydn.errorNotSupportedException</b></dt>
   </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>add</b>(store_name, values) </div>
+</details>
+<hr><a name="putAll"></a> <details><summary>
+  <div class="fixedFont"> <b>addAll</b>(store_name, values) </div>
   <div class="description"> Add a list of object to an in-of-line or
     auto increment store. </div>
 </summary>
@@ -215,7 +216,7 @@ stores: [{
     <p>If adding records violate database constraint, the request fail,
       but transaction continue and will eventually commit. The transaction
       can be cancelled on receiving the request result.</p>
-          <pre>var req = db.add('store name', objs);
+          <pre>var req = db.addAll('store name', objs);
 req.done(function(keys) {
   console.log('all ' + keys.length + ' objects added');
 });
@@ -251,7 +252,7 @@ req.fail(function(keys_or_errors) {
       <b>ydn.error.NotSupportedException</b></dt>
   </dl>
 </details><details><summary>
-  <div class="fixedFont"> <b>add</b>(store_name, values, ids) </div>
+  <div class="fixedFont"> <b>addAll</b>(store_name, values, ids) </div>
   <div class="description"> Add list of object to an out-of-line store.
   </div>
 </summary>
@@ -312,10 +313,15 @@ req.fail(function(keys_or_errors) {
 <hr><details><summary><a name="branch"></a>
   <div class="fixedFont"> <b>branch</b>(tx_policy, is_serial,
     store_names, mode, max_tx)&nbsp;</div>
-  <div class="description"> Create a new thread with given transaction
-    thread policy using existing connection. </div>
+  <div class="description"> Create a new storage instance with given transaction
+    thread policy from the connection. </div>
 </summary>
-  <p>Generally it is a good practice for each components of the app use their own branch, rather then using storage instance direction. Use parallel transaction policy for performance and serial transaction policy when request needed to be executed in order.</p>
+  <p>When requests are placed to storage instance, these requests can be either of serial or parallel depending on transaction policy used. Primary storage instance use serial transaction policy by default. Use parallel transaction policy for performance and serial transaction policy when request needed to be executed in order.</p>
+  <pre>var parallel = db.branch('repeat', false);
+var req1 = db.put('store1', record1);
+var req2 = db.get('store1', record1); // this request execute after req1
+var req3 = parallel.put('store1', record1); // this request may execute before req1 or req2
+  </pre>
   <dl class="detailList">
     <dt class="heading">Parameters:</dt>
     <dt><span class="light fixedFont">{string}</span> <b>tx_policy</b></dt>
@@ -459,8 +465,49 @@ req.fail(function(keys_or_errors) {
                 used.</span></div>
     </dd>
   </dl>
-</details><details><summary><a name="count-index"></a>
-  <div class="fixedFont"> <b>count</b>(store_name, index_name,
+</details>
+<details><summary>
+  <div class="fixedFont"> <b>count</b>(store_name) </div>
+  <div class="description"> Get number of items in a store. </div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
+    <dd>store name.</dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Returns:</dt>
+    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
+      request object.
+      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{number}</span>
+        Total number of records in the store.</div>
+      <div><span class="deferred-result">fail</span>:&nbsp;<span style="font-style: italic;">Result
+                is not defined.</span></div>
+    </dd>
+  </dl>
+</details>
+<details><summary>
+  <div class="fixedFont"> <b>count</b>(store_names) </div>
+  <div class="description"> Get number of records in a give stores. </div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">{!Array.&lt;string&gt;}</span> <b>store_name</b></dt>
+    <dd>store name.</dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Returns:</dt>
+    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
+      request object.
+      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!Array.number}</span>
+        Total number of records for each respective store.</div>
+      <div><span class="deferred-result">fail</span>: <span style="font-style: italic;">Not
+                used.</span></div>
+    </dd>
+  </dl>
+</details>
+<hr><details><summary><a name="count-index"></a>
+  <div class="fixedFont"> <b>countByIndex</b>(store_name, index_name,
     key_range)&nbsp;</div>
   <div class="description"> Get number of records in the index key
     range. </div>
@@ -490,8 +537,9 @@ req.done(function(count){
                 used.</span></div>
     </dd>
   </dl>
-</details><details><summary><a name="count-iterator"></a>
-  <div class="fixedFont"> <b>count</b>(iterator) <span class="version">core</span></div>
+</details>
+<hr><details><summary><a name="count-iterator"></a>
+  <div class="fixedFont"> <b>countOf</b>(iterator) <span class="version">core</span></div>
   <div class="description"> Get number of records in the iterator. </div>
 </summary>
   <p>Count number of cursors found by iterating the iterator until it is
@@ -509,44 +557,6 @@ req.done(function(count){
         Total number of records found during cursor iteration.</div>
       <div><span class="deferred-result">fail</span>: Error as received on
         cursor request.</div>
-    </dd>
-  </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>count</b>(store_name) </div>
-  <div class="description"> Get number of items in a store. </div>
-</summary>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
-    <dd>store name.</dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
-      request object.
-      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{number}</span>
-        Total number of records in the store.</div>
-      <div><span class="deferred-result">fail</span>:&nbsp;<span style="font-style: italic;">Result
-                is not defined.</span></div>
-    </dd>
-  </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>count</b>(store_names) </div>
-  <div class="description"> Get number of records in a give stores. </div>
-</summary>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{!Array.&lt;string&gt;}</span> <b>store_name</b></dt>
-    <dd>store name.</dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
-      request object.
-      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!Array.number}</span>
-        Total number of records for each respective store.</div>
-      <div><span class="deferred-result">fail</span>: <span style="font-style: italic;">Not
-                used.</span></div>
     </dd>
   </dl>
 </details>
@@ -596,7 +606,7 @@ req.done(function(count){
 </summary>
         <pre>var q = db.from('store name');
 q = q.where('country', '=', 'SG').order('age');
-q.toArray(function(list) {
+q.list(function(list) {
   console.log(list);
 });</pre>
   <dl class="detailList">
@@ -755,8 +765,9 @@ db.keys('product', key_range, 500).then(function(keys) {
                 used.</span></div>
     </dd>
   </dl>
-</details> <details><summary><a name="keys-keyrange-index"></a>
-  <div class="fixedFont"> <b>keys</b>(store_name, index_name,
+
+</details><hr> <details><summary><a name="keysByIndex"></a>
+  <div class="fixedFont"> <b>keysByIndex</b>(store_name, index_name,
     key_range, limit, offset, reverse) </div>
   <div class="description"> Retrieve primary keys from a store on an
     index. </div>
@@ -766,7 +777,7 @@ db.keys('product', key_range, 500).then(function(keys) {
   <p>The follow code snippet illustrates listing product id (primary keys)
     which is tagged with with <code>'flammable'</code>.</p>
         <pre>var key_range = ydn.db.KeyRange.only('flammble');
-db.keys('product', 'tag', key_range, 500).then(function(keys) {
+db.keysByIndex('product', 'tag', key_range, 500).then(function(keys) {
   console.log(keys);
 }, function(e) {
   throw e;
@@ -801,8 +812,10 @@ db.keys('product', 'tag', key_range, 500).then(function(keys) {
                 used.</span></div>
     </dd>
   </dl>
-</details> <details><summary><a name="keys-iterator"></a>
-  <div class="fixedFont"> <b>keys</b>(iterator, limit) <span class="version">core</span></div>
+
+</details>
+<hr><details><summary><a name="keysOf"></a>
+  <div class="fixedFont"> <b>keysOf</b>(iterator, limit) <span class="version">core</span></div>
   <div class="description"> Retrieve effective keys of the iterator. </div>
 </summary>
   <div>Resulting keys are sorted by effective keys and then by primary
@@ -810,7 +823,7 @@ db.keys('product', 'tag', key_range, 500).then(function(keys) {
   <p>The follow example illustrate retrieving unique list of 'tag' index
     key from store 'article'.</p>
         <pre>var iter = new ydn.db.IndexIterator('article', 'tag', null, false, true);
-db.keys(iter, 500).done(function(keys) {
+db.keysOf(iter, 500).done(function(keys) {
   console.log(keys);
 });
 </pre>
@@ -1049,69 +1062,8 @@ req.then(function () {
     <dt class="heading">Throws: <b>DataError</b>, <b>DataCloneError</b>,
       <b>ydn.error.NotSupportedException</b></dt>
   </dl>
-</details> <details><summary>
-  <div class="fixedFont"> <b>put</b>(store_name, values) </div>
-  <div class="description"> Put list of objects to the store using
-    in-line primary key or auto increment key. </div>
-</summary>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
-    <dd>The store name.</dd>
-    <dt><span class="light fixedFont">{!Array}</span> <b>values</b></dt>
-    <dd><span class="light fixedFont optional">Non-nullable</span>. List of record values to be stored.</dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
-      request object. If all records are successfully added, done callback
-      is invoked, otherwise, fail callback is invoked.
-      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!Array.&lt;!IDBKey&gt;}</span>
-        Respective list of effected primary keys.</div>
-      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{!Array.&lt;!IDBKey|SQLError|ConstraintError|AbortError|UnknownError&gt;}</span>
-        Respective list of effected primary keys or error received on the
-        put request.</div>
-    </dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Throws: <b>DataError</b>, <b>DataCloneError</b>,
-      <b>ydn.NotSupportedException</b></dt>
-  </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>put</b>(store_name, values, ids) </div>
-  <div class="description"> Put list of objects to the store using out
-    of line key. </div>
-</summary>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
-    <dd>The store name.</dd>
-    <dt><span class="light fixedFont">{!Array}</span> <b>values</b></dt>
-    <dd><span class="light fixedFont optional">Non-nullable</span>. List of record value to be stored.</dd>
-    <dt><span class="light fixedFont">{!Array.&lt;!IDbKey&gt;}</span> <b>ids</b></dt>
-    <dd><span class="light fixedFont optional">Non-nullable</span>. List of primary keys corresponding to record values.</dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
-      request object. If all records are successfully added, done callback
-      is invoked, otherwise, fail callback is invoked.
-      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{</span><span
-          class="light fixedFont"><span
-          class="light fixedFont">!Array.&lt;</span>!IDBKey&gt;}</span>
-        Respective list of effected primary keys.</div>
-      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{</span><span
-          class="light fixedFont"><span
-          class="light fixedFont">!Array.&lt;</span>!IDBKey|SQLError|ConstraintError|AbortError|UnknownError&gt;}</span>
-        Respective list of effected primary keys or error received on the
-        put request.</div>
-    </dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Throws: <b>DataError</b>, <b>DataCloneError</b>,
-      <b>ydn.error.NotSupportedException</b></dt>
-  </dl>
-</details><details><summary>
+</details>
+<details><summary>
   <div class="fixedFont"> <b>put</b>(keys, values) </div>
   <div class="description"> Put list of objects to the store using key
     objects. </div>
@@ -1140,6 +1092,69 @@ db.put([key1, key2, key3], [message, message_body, recp]);</pre>
       <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!IDBKey}</span>
         Respective list of effected primary keys.</div>
       <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{!IDBKey|SQLError|ConstraintError|AbortError|UnknownError}</span>
+        Respective list of effected primary keys or error received on the
+        put request.</div>
+    </dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Throws: <b>DataError</b>, <b>DataCloneError</b>,
+      <b>ydn.error.NotSupportedException</b></dt>
+  </dl>
+</details>
+<hr><a name="putAll"></a> <details><summary>
+  <div class="fixedFont"> <b>putAll</b>(store_name, values) </div>
+  <div class="description"> Put list of objects to the store using
+    in-line primary key or auto increment key. </div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
+    <dd>The store name.</dd>
+    <dt><span class="light fixedFont">{!Array}</span> <b>values</b></dt>
+    <dd><span class="light fixedFont optional">Non-nullable</span>. List of record values to be stored.</dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Returns:</dt>
+    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
+      request object. If all records are successfully added, done callback
+      is invoked, otherwise, fail callback is invoked.
+      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!Array.&lt;!IDBKey&gt;}</span>
+        Respective list of effected primary keys.</div>
+      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{!Array.&lt;!IDBKey|SQLError|ConstraintError|AbortError|UnknownError&gt;}</span>
+        Respective list of effected primary keys or error received on the
+        put request.</div>
+    </dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Throws: <b>DataError</b>, <b>DataCloneError</b>,
+      <b>ydn.NotSupportedException</b></dt>
+  </dl>
+</details><details><summary>
+  <div class="fixedFont"> <b>putAll</b>(store_name, values, ids) </div>
+  <div class="description"> Put list of objects to the store using out
+    of line key. </div>
+</summary>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">{string}</span> <b>store_name</b></dt>
+    <dd>The store name.</dd>
+    <dt><span class="light fixedFont">{!Array}</span> <b>values</b></dt>
+    <dd><span class="light fixedFont optional">Non-nullable</span>. List of record value to be stored.</dd>
+    <dt><span class="light fixedFont">{!Array.&lt;!IDbKey&gt;}</span> <b>ids</b></dt>
+    <dd><span class="light fixedFont optional">Non-nullable</span>. List of primary keys corresponding to record values.</dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Returns:</dt>
+    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
+      request object. If all records are successfully added, done callback
+      is invoked, otherwise, fail callback is invoked.
+      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{</span><span
+          class="light fixedFont"><span
+          class="light fixedFont">!Array.&lt;</span>!IDBKey&gt;}</span>
+        Respective list of effected primary keys.</div>
+      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{</span><span
+          class="light fixedFont"><span
+          class="light fixedFont">!Array.&lt;</span>!IDBKey|SQLError|ConstraintError|AbortError|UnknownError&gt;}</span>
         Respective list of effected primary keys or error received on the
         put request.</div>
     </dd>
@@ -1388,7 +1403,7 @@ db.scan(function(keys, values) {
       }]
 };
 var db = new ydn.db.Storage('db name', schema);
-db.put('contact', [{first: 'Peter'}, {first: 'Collin'}]);
+db.putAll('contact', [{first: 'Peter'}, {first: 'Collin'}]);
 db.search('name', 'poter').done(function(x) {
   console.log(x);
   db.get(x[0].storeName, x[0].primaryKey).done(function(top) {
@@ -1454,45 +1469,7 @@ var eventHandlerLogin = function(e) {
     <dd>If database is already connected.</dd>
   </dl>
 </details>
-<hr style="display: none" > <details style="display: none"  > <summary><a name="spawn"></a>
-  <div class="fixedFont"> <b>spawn</b>(generator, store_names, mode)<span
-      class="version">coru</span>
-  </div>
-  <div class="description"> Spawn a transaction thread in a generator. </div>
-</summary>
-        <pre>var db = new ydn.db.Storage(db_name, schema);
-db.spawn(function* (tdb) {
-  var value_1 = yield tdb.get('st', key_1);
-  value_1.amount += 10;
-  var key_1 = yield tdb.put('st', value_1);
-  tdb.commit(); // explicitly commit the active transaction
-  var value = yield tdb.get('st', key_1);
-  console.log(value);
-};, ['st'], 'readwrite'));
-</pre>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{function*}</span> <b>generator</b></dt>
-    <dd><span class="light fixedFont">Optional.</span> Generator function
-      accepting one argument of <code>ydn.db.DbOperator</code> instance.</dd>
-    <dt><span class="light fixedFont">{Array.&lt;string&gt;=}</span> <b>store_names</b></dt>
-    <dd><span class="light fixedFont">Optional.</span> List of store name.
-      Default to all object stores.</dd>
-    <dt><span class="light fixedFont">{string=}</span> <b>mode</b></dt>
-    <dd><span class="light fixedFont">Optional.</span> Transaction mode: <code>readonly</code>
-      (default) or <code>readwrite</code>. </dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd><span class="light fixedFont">{!ydn.db.Request}</span> Returns a
-      request object.
-      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{number}</span>
-        Return number of transaction used.</div>
-      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{number}</span>
-        Return number of transaction used.</div>
-    </dd>
-  </dl>
-</details>
+
 <hr> <details><summary><a name="run"></a>
   <div class="fixedFont"> <b>run</b>(transaction_callback, store_names,
     mode)&nbsp;</div>
@@ -1642,8 +1619,41 @@ req.then(function() {
         Error as received on cursor request.</div>
     </dd>
   </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>values</b>(store_name, index_name
+
+</details>
+<details><summary>
+  <div class="fixedFont"> <b>values</b>(keys) </div>
+  <div class="description"> Retrieve list of record values as referred
+    by the given key objects. </div>
+</summary>
+  <p>The follow example illustrates retrieving a record from 'player'
+    object store and a record from 'weapon' object store.</p>
+        <pre>var k1 = new ydn.db.Key('player', 'abc');
+var k2 = new ydn.db.Key('weapon', 'abc');
+db.values([k1, k2]).done(function(objs) {
+  var player_abc = objs[0];
+  var weapon_abc = objs[1];
+});
+</pre>
+  <dl class="detailList">
+    <dt class="heading">Parameters:</dt>
+    <dt><span class="light fixedFont">{!Array.&lt;!ydn.db.Key&gt;}</span>
+      <b>keys</b></dt>
+    <dd>The key object of the object to retrieve.</dd>
+  </dl>
+  <dl class="detailList">
+    <dt class="heading">Returns:</dt>
+    <dd>
+      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!Array.&lt;!Object|undefined&gt;}</span>
+        Respective list of reference values yield in iterating the
+        iterator. If record is not found, the result is <code>undefined</code>.</div>
+      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{Error|SQLError}</span>
+        Error as received on cursor request.</div>
+    </dd>
+  </dl>
+</details>
+<hr><a name="valuesByIndex"></a><details><summary>
+  <div class="fixedFont"> <b>valuesByIndex</b>(store_name, index_name
     key_range, limit, offset, reverse) </div>
   <div class="description"> Retrieve record values from a store by
     index. </div>
@@ -1678,38 +1688,10 @@ req.then(function() {
         Error as received on cursor request.</div>
     </dd>
   </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>values</b>(keys) </div>
-  <div class="description"> Retrieve list of record values as referred
-    by the given key objects. </div>
-</summary>
-  <p>The follow example illustrates retrieving a record from 'player'
-    object store and a record from 'weapon' object store.</p>
-        <pre>var k1 = new ydn.db.Key('player', 'abc');
-var k2 = new ydn.db.Key('weapon', 'abc');
-db.values([k1, k2]).done(function(objs) {
-  var player_abc = objs[0];
-  var weapon_abc = objs[1];
-});
-</pre>
-  <dl class="detailList">
-    <dt class="heading">Parameters:</dt>
-    <dt><span class="light fixedFont">{!Array.&lt;!ydn.db.Key&gt;}</span>
-      <b>keys</b></dt>
-    <dd>The key object of the object to retrieve.</dd>
-  </dl>
-  <dl class="detailList">
-    <dt class="heading">Returns:</dt>
-    <dd>
-      <div><span class="deferred-result">done</span>: <span class="light fixedFont">{!Array.&lt;!Object|undefined&gt;}</span>
-        Respective list of reference values yield in iterating the
-        iterator. If record is not found, the result is <code>undefined</code>.</div>
-      <div><span class="deferred-result">fail</span>: <span class="light fixedFont">{Error|SQLError}</span>
-        Error as received on cursor request.</div>
-    </dd>
-  </dl>
-</details><details><summary>
-  <div class="fixedFont"> <b>values</b>(iterator, limit) <span class="version">core</span></div>
+</details>
+<hr>
+<details><a name="valueOf"></a> <summary>
+  <div class="fixedFont"> <b>valuesOf</b>(iterator, limit) <span class="version">core</span></div>
   <div class="description"> Retrieve reference values of the iterator. </div>
 </summary>
   <p>Resulting values are sorted by effective keys and then by primary
@@ -1718,10 +1700,10 @@ db.values([k1, k2]).done(function(objs) {
   <p>The follow example illustrate retrieving 'article', records by their
     index key value of 'javascript'.</p>
         <pre>var iter = ydn.db.ValueIterator.where('article', 'tag', '=', 'javascript');
-db.values(iter, 10).done(function(tags) {
+db.valuesOf(iter, 10).done(function(tags) {
   console.log(tags);
 });
-db.values(iter, 10).done(function(tags) { // get next 10 articles
+db.valuesOf(iter, 10).done(function(tags) { // get next 10 articles
   console.log(tags);
 });
 </pre>
